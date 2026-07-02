@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --sys-surface: #fbfbe2;
+  --sys-surface-dim: #dbdcc3;
+  --sys-surface-bright: #fbfbe2;
+  --sys-surface-container-lowest: #ffffff;
+  --sys-surface-container-low: #f5f5dc;
+  --sys-surface-container: #efefd7;
+  --sys-surface-container-high: #eaead1;
+  --sys-surface-container-highest: #e4e4cc;
+  --sys-on-surface: #1b1d0e;
+  --sys-on-surface-variant: #56423e;
+  --sys-inverse-surface: #303221;
+  --sys-inverse-on-surface: #f2f2d9;
+  --sys-outline: #89726d;
+  --sys-outline-variant: #ddc0ba;
+  --sys-surface-tint: #9f402d;
+  --sys-primary: #9f402d;
+  --sys-on-primary: #ffffff;
+  --sys-primary-container: #e2725b;
+  --sys-on-primary-container: #5a0d02;
+  --sys-inverse-primary: #ffb4a5;
+  --sys-secondary: #795900;
+  --sys-on-secondary: #ffffff;
+  --sys-secondary-container: #ffbf00;
+  --sys-on-secondary-container: #6d5000;
+  --sys-tertiary: #7b5455;
+  --sys-on-tertiary: #ffffff;
+  --sys-tertiary-container: #b48888;
+  --sys-on-tertiary-container: #422324;
+  --sys-error: #ba1a1a;
+  --sys-on-error: #ffffff;
+  --sys-error-container: #ffdad6;
+  --sys-on-error-container: #93000a;
+  
+  --sys-glass-bg: rgba(255, 255, 255, 0.7);
+  --sys-glass-border: rgba(255, 255, 255, 0.6);
+  --sys-glass-shadow: rgba(0, 0, 0, 0.04);
+  --sys-glass-shadow-hover: rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  --sys-surface: #201a19;
+  --sys-surface-dim: #171211;
+  --sys-surface-bright: #3f3634;
+  --sys-surface-container-lowest: #140c0b;
+  --sys-surface-container-low: #201a19;
+  --sys-surface-container: #241e1d;
+  --sys-surface-container-high: #2f2827;
+  --sys-surface-container-highest: #3b3332;
+  --sys-on-surface: #ede0dd;
+  --sys-on-surface-variant: #d8c2be;
+  --sys-inverse-surface: #ede0dd;
+  --sys-inverse-on-surface: #201a19;
+  --sys-outline: #a08c89;
+  --sys-outline-variant: #534341;
+  --sys-surface-tint: #ffb4a6;
+  --sys-primary: #ffb4a6;
+  --sys-on-primary: #650b00;
+  --sys-primary-container: #832715;
+  --sys-on-primary-container: #ffdad4;
+  --sys-inverse-primary: #a13d28;
+  --sys-secondary: #fbbc04;
+  --sys-on-secondary: #402d00;
+  --sys-secondary-container: #5c4300;
+  --sys-on-secondary-container: #ffdf9c;
+  --sys-tertiary: #ecbaba;
+  --sys-on-tertiary: #472728;
+  --sys-tertiary-container: #613c3d;
+  --sys-on-tertiary-container: #ffdad9;
+  --sys-error: #ffb4ab;
+  --sys-on-error: #690005;
+  --sys-error-container: #93000a;
+  --sys-on-error-container: #ffdad6;
+
+  --sys-glass-bg: rgba(36, 30, 29, 0.65);
+  --sys-glass-border: rgba(255, 255, 255, 0.08);
+  --sys-glass-shadow: rgba(0, 0, 0, 0.25);
+  --sys-glass-shadow-hover: rgba(0, 0, 0, 0.4);
+}
+
+@theme {
+  --color-surface: var(--sys-surface);
+  --color-surface-dim: var(--sys-surface-dim);
+  --color-surface-bright: var(--sys-surface-bright);
+  --color-surface-container-lowest: var(--sys-surface-container-lowest);
+  --color-surface-container-low: var(--sys-surface-container-low);
+  --color-surface-container: var(--sys-surface-container);
+  --color-surface-container-high: var(--sys-surface-container-high);
+  --color-surface-container-highest: var(--sys-surface-container-highest);
+  --color-on-surface: var(--sys-on-surface);
+  --color-on-surface-variant: var(--sys-on-surface-variant);
+  --color-inverse-surface: var(--sys-inverse-surface);
+  --color-inverse-on-surface: var(--sys-inverse-on-surface);
+  --color-outline: var(--sys-outline);
+  --color-outline-variant: var(--sys-outline-variant);
+  --color-surface-tint: var(--sys-surface-tint);
+  --color-primary: var(--sys-primary);
+  --color-on-primary: var(--sys-on-primary);
+  --color-primary-container: var(--sys-primary-container);
+  --color-on-primary-container: var(--sys-on-primary-container);
+  --color-inverse-primary: var(--sys-inverse-primary);
+  --color-secondary: var(--sys-secondary);
+  --color-on-secondary: var(--sys-on-secondary);
+  --color-secondary-container: var(--sys-secondary-container);
+  --color-on-secondary-container: var(--sys-on-secondary-container);
+  --color-tertiary: var(--sys-tertiary);
+  --color-on-tertiary: var(--sys-on-tertiary);
+  --color-tertiary-container: var(--sys-tertiary-container);
+  --color-on-tertiary-container: var(--sys-on-tertiary-container);
+  --color-error: var(--sys-error);
+  --color-on-error: var(--sys-on-error);
+  --color-error-container: var(--sys-error-container);
+  --color-on-error-container: var(--sys-on-error-container);
+
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  --spacing-container-max: 1200px;
+  --spacing-gutter: 24px;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased;
+  }
+}
+
+.glass-card {
+  @apply backdrop-blur-xl rounded-xl transition-all duration-300 ease-in-out;
+  background-color: var(--sys-glass-bg);
+  border: 1px solid var(--sys-glass-border);
+  box-shadow: 
+    0 4px 6px -1px var(--sys-glass-shadow),
+    0 10px 15px -3px var(--sys-glass-shadow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-card-hover {
+  @apply hover:-translate-y-0.5 transition-all duration-300 ease-in-out hover:scale-[1.01];
+}
+.glass-card-hover:hover {
+  box-shadow: 
+    0 10px 15px -3px var(--sys-glass-shadow-hover),
+    0 20px 25px -5px var(--sys-glass-shadow-hover),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+@layer utilities {
+  .cat-food { @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 transition-colors duration-300 ease-in-out; }
+  .cat-groceries { @apply bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200 transition-colors duration-300 ease-in-out; }
+  .cat-transportation { @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 transition-colors duration-300 ease-in-out; }
+  .cat-shopping { @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 transition-colors duration-300 ease-in-out; }
+  .cat-entertainment { @apply bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 transition-colors duration-300 ease-in-out; }
+  .cat-bills { @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 transition-colors duration-300 ease-in-out; }
+  .cat-housing { @apply bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 transition-colors duration-300 ease-in-out; }
+  .cat-healthcare { @apply bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200 transition-colors duration-300 ease-in-out; }
+  .cat-education { @apply bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 transition-colors duration-300 ease-in-out; }
+  .cat-gifts { @apply bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-200 transition-colors duration-300 ease-in-out; }
+  .cat-travel { @apply bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 transition-colors duration-300 ease-in-out; }
+  .cat-utilities { @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 transition-colors duration-300 ease-in-out; }
+  .cat-salary { @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 transition-colors duration-300 ease-in-out; }
+  .cat-allowance { @apply bg-lime-100 text-lime-800 dark:bg-lime-900 dark:text-lime-200 transition-colors duration-300 ease-in-out; }
+  .cat-part-time { @apply bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200 transition-colors duration-300 ease-in-out; }
+  .cat-freelance { @apply bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200 transition-colors duration-300 ease-in-out; }
+  .cat-bonus { @apply bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 transition-colors duration-300 ease-in-out; }
+  .cat-investment { @apply bg-green-200 text-green-900 dark:bg-green-800 dark:text-green-200 transition-colors duration-300 ease-in-out; }
+  .cat-refund { @apply bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 transition-colors duration-300 ease-in-out; }
+  .cat-gift-received { @apply bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-800 dark:text-fuchsia-200 transition-colors duration-300 ease-in-out; }
+  .cat-others { @apply bg-stone-100 text-stone-800 dark:bg-stone-800 dark:text-stone-200 transition-colors duration-300 ease-in-out; }
+
+  .text-positive { @apply text-emerald-700 dark:text-emerald-400 transition-colors duration-300 ease-in-out; }
+  .text-negative { @apply text-rose-600 dark:text-rose-400 transition-colors duration-300 ease-in-out; }
+}

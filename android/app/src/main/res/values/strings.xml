@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WealthTrack</string>
+    <string name="title_activity_main">WealthTrack</string>
+    <string name="package_name">com.jhin.wealthtrack</string>
+    <string name="custom_url_scheme">com.jhin.wealthtrack</string>
+</resources>
