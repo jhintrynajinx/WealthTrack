@@ -135,7 +135,7 @@ export function Settings() {
           <div className="flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleExport}
-              className="flex items-center justify-center space-x-2 bg-surface-container-low border border-surface-variant text-on-surface py-2 px-4 rounded-xl hover:bg-surface-container-high transition-colors"
+              className="flex items-center justify-center space-x-2 blue-card-soft border-0 text-blue-700 py-2 px-4 rounded-xl hover:opacity-80 transition-opacity"
             >
               <Download size={18} />
               <span>Export JSON</span>
@@ -143,7 +143,7 @@ export function Settings() {
             
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center space-x-2 bg-surface-container-low border border-surface-variant text-on-surface py-2 px-4 rounded-xl hover:bg-surface-container-high transition-colors"
+              className="flex items-center justify-center space-x-2 blue-card-soft border-0 text-blue-700 py-2 px-4 rounded-xl hover:opacity-80 transition-opacity"
             >
               <Upload size={18} />
               <span>Import JSON</span>

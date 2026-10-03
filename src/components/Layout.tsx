@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Receipt, PlusCircle, Settings as SettingsIcon, Moon, Sun, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, Receipt, PlusCircle, Settings as SettingsIcon, CalendarDays, CalendarCheck, FileText } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { cn } from '../lib/utils';
 import { QuickAddModal } from './QuickAddModal';
@@ -12,29 +12,26 @@ interface LayoutProps {
 }
 
 export function Layout({ children, activeView, setActiveView }: LayoutProps) {
-  const { settings, updateSettings, timeRange } = useStore();
+  const { timeRange } = useStore();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isTimeSelectorOpen, setIsTimeSelectorOpen] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', settings.theme === 'dark');
-  }, [settings.theme]);
-
-  const toggleTheme = () => {
-    const newTheme = settings.theme === 'light' ? 'dark' : 'light';
-    updateSettings({ theme: newTheme });
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
+    // Always enforce light theme — remove any previously stored dark class
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transactions', icon: Receipt },
+    { id: 'daily-budget', label: 'Daily Budget', icon: CalendarCheck },
+    { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'add', label: 'Add', icon: PlusCircle, isAction: true },
     { id: 'settings', label: 'Settings', icon: SettingsIcon },
   ];
 
   return (
-    <div className={cn("min-h-screen bg-surface text-on-surface antialiased transition-colors duration-300", settings.theme)}>
+    <div className="min-h-screen bg-surface text-on-surface antialiased">
       
       {/* Desktop Top Nav */}
       <nav className="hidden md:flex bg-[var(--sys-glass-bg)] backdrop-blur-xl fixed top-0 w-full z-40 border-b border-[var(--sys-glass-border)] shadow-sm transition-colors duration-300">
@@ -48,15 +45,12 @@ export function Layout({ children, activeView, setActiveView }: LayoutProps) {
               <span>{timeRange.label}</span>
             </button>
           </div>
-          <div className="flex items-center space-x-6">
-            <button onClick={toggleTheme} className="text-on-surface-variant hover:bg-surface-container-high rounded-full p-2 transition-colors duration-300">
-              {settings.theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-            </button>
+          <div className="flex items-center space-x-4">
             <button 
               onClick={() => setIsAddModalOpen(true)}
-              className="bg-primary text-on-primary font-mono text-sm px-6 py-2 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-300 shadow-md shadow-primary/20 border-t border-white/20"
+              className="blue-card text-white font-sans text-sm px-5 py-2 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-200"
             >
-              Add Record
+              + Add Record
             </button>
           </div>
         </div>
@@ -75,9 +69,7 @@ export function Layout({ children, activeView, setActiveView }: LayoutProps) {
             </button>
           </div>
           <div className="flex items-center mr-14">
-            <button onClick={toggleTheme} className="text-on-surface-variant hover:bg-surface-container-high rounded-full p-2 transition-colors duration-300">
-              {settings.theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-            </button>
+            {/* Dark mode removed — single light theme */}
           </div>
         </div>
       </nav>
@@ -86,7 +78,7 @@ export function Layout({ children, activeView, setActiveView }: LayoutProps) {
       <aside className="hidden md:flex flex-col bg-[var(--sys-glass-bg)] backdrop-blur-xl fixed left-0 top-0 h-full md:w-52 lg:w-64 z-50 border-r border-[var(--sys-glass-border)] p-4 pt-8 transition-colors duration-300">
         <div className="mb-12 px-4">
           <h2 className="font-display text-xl lg:text-2xl font-bold text-primary truncate">WealthTrack</h2>
-          <p className="text-xs lg:text-sm text-on-surface-variant mt-1 truncate">Manage your wealth</p>
+          <p className="text-xs text-on-surface-variant mt-0.5 truncate font-mono">Personal Finance</p>
         </div>
         <nav className="flex-1 space-y-2">
           {navItems.filter(i => !i.isAction).map((item) => (
@@ -94,10 +86,10 @@ export function Layout({ children, activeView, setActiveView }: LayoutProps) {
               key={item.id}
               onClick={() => setActiveView(item.id)}
               className={cn(
-                "w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02]",
+                "w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200",
                 activeView === item.id
-                  ? "bg-primary-container text-on-primary-container font-medium shadow-sm"
-                  : "text-on-surface-variant hover:bg-tertiary-container/20"
+                  ? "bg-primary/10 text-primary font-semibold border border-primary/20"
+                  : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
               )}
             >
               <item.icon className="mr-3" size={20} />
@@ -108,19 +100,22 @@ export function Layout({ children, activeView, setActiveView }: LayoutProps) {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden bg-[var(--sys-glass-bg)] backdrop-blur-xl fixed bottom-0 left-0 w-full z-40 border-t border-[var(--sys-glass-border)] transition-colors duration-300 shadow-lg px-2 pb-safe">
-        <div className="flex justify-around items-center h-16">
+      <nav className="md:hidden bg-[var(--sys-glass-bg)] backdrop-blur-xl fixed bottom-0 left-0 w-full z-40 border-t border-[var(--sys-glass-border)] transition-colors duration-300 shadow-md px-2 pb-safe">
+        <div className="flex justify-around items-center h-13 py-1">
           {navItems.filter(i => !i.isAction).map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveView(item.id)}
+              aria-label={item.label}
+              title={item.label}
               className={cn(
-                "flex flex-col items-center justify-center rounded-xl px-4 py-2 transition-all flex-1",
-                activeView === item.id ? "text-primary" : "text-on-surface-variant"
+                "flex items-center justify-center rounded-xl p-2.5 transition-all flex-1 min-w-0 max-w-[64px]",
+                activeView === item.id
+                  ? "text-primary bg-primary/10 shadow-xs"
+                  : "text-on-surface-variant/80 hover:text-on-surface hover:bg-surface-container/50"
               )}
             >
-              <item.icon size={20} className="mb-1" />
-              <span className="font-mono text-[10px] uppercase tracking-wider">{item.label}</span>
+              <item.icon size={21} />
             </button>
           ))}
         </div>
@@ -129,13 +124,13 @@ export function Layout({ children, activeView, setActiveView }: LayoutProps) {
       {/* Mobile Floating Action Button */}
       <button
         onClick={() => setIsAddModalOpen(true)}
-        className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.25rem)] right-4 z-50 bg-primary text-on-primary p-2.5 shadow-lg shadow-primary/30 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
+        className="md:hidden fixed top-[calc(env(safe-area-inset-top)+0.25rem)] right-4 z-50 blue-card text-white p-2.5 shadow-lg rounded-full hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
       >
         <PlusCircle size={22} />
       </button>
 
       {/* Main Content */}
-      <main className="md:ml-52 lg:ml-64 pt-20 md:pt-28 pb-24 md:pb-12 px-4 md:px-12 max-w-[1200px] mx-auto min-h-screen">
+      <main className="md:ml-52 lg:ml-64 pt-16 md:pt-28 pb-20 md:pb-12 px-3.5 sm:px-6 md:px-12 max-w-[1200px] mx-auto min-h-screen">
         {children}
       </main>
 

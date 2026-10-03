@@ -5,7 +5,7 @@ import { AdaptiveNumber } from './AdaptiveNumber';
 import { format, differenceInDays } from 'date-fns';
 import { 
   Wallet, ArrowDownToLine, ArrowUpFromLine, 
-  TrendingUp, Landmark, Banknote, SmartphoneNfc
+  TrendingUp, Landmark, Banknote, SmartphoneNfc, X
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -55,6 +55,8 @@ export function Dashboard() {
       .reduce((sum, t) => sum + t.amount, 0);
   }, [filteredTransactions]);
 
+  const [breakdownType, setBreakdownType] = React.useState<'expense' | 'income'>('expense');
+
   const expenseByCategory = useMemo(() => {
     const data: Record<string, { value: number, colorClass: string }> = {};
     filteredTransactions.filter(t => t.type === 'expense').forEach(t => {
@@ -68,8 +70,48 @@ export function Dashboard() {
     });
     return Object.entries(data)
       .sort((a, b) => b[1].value - a[1].value)
-      .map(([name, { value, colorClass }]) => ({ name, value, color: getCategoryChartColor(colorClass) }));
-  }, [filteredTransactions, categories]);
+      .map(([name, { value, colorClass }]) => ({ 
+        name, 
+        value, 
+        color: getCategoryChartColor(colorClass),
+        percentage: timeFilteredExpenses > 0 ? (value / timeFilteredExpenses) * 100 : 0
+      }));
+  }, [filteredTransactions, categories, timeFilteredExpenses]);
+
+  const incomeByCategory = useMemo(() => {
+    const data: Record<string, { value: number, colorClass: string }> = {};
+    filteredTransactions.filter(t => t.type === 'income').forEach(t => {
+      const cat = categories.find(c => c.id === t.categoryId);
+      const name = cat?.name || 'Income';
+      const colorClass = cat?.color || 'cat-salary';
+      if (!data[name]) {
+        data[name] = { value: 0, colorClass };
+      }
+      data[name].value += t.amount;
+    });
+    return Object.entries(data)
+      .sort((a, b) => b[1].value - a[1].value)
+      .map(([name, { value, colorClass }]) => ({ 
+        name, 
+        value, 
+        color: getCategoryChartColor(colorClass),
+        percentage: timeFilteredIncome > 0 ? (value / timeFilteredIncome) * 100 : 0
+      }));
+  }, [filteredTransactions, categories, timeFilteredIncome]);
+
+  const activeBreakdownData = breakdownType === 'expense' ? expenseByCategory : incomeByCategory;
+  const activeBreakdownTotal = breakdownType === 'expense' ? timeFilteredExpenses : timeFilteredIncome;
+
+  const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setSelectedCategoryName(null);
+  }, [breakdownType, globalTimeRange]);
+
+  const selectedCategory = useMemo(() => {
+    if (!selectedCategoryName) return null;
+    return activeBreakdownData.find(c => c.name === selectedCategoryName) || null;
+  }, [selectedCategoryName, activeBreakdownData]);
 
   const chartData = useMemo(() => {
     const start = new Date(globalTimeRange.start);
@@ -118,38 +160,40 @@ export function Dashboard() {
   }, [filteredTransactions, globalTimeRange]);
 
   const globalCards = [
-    { title: 'Total Balance', amount: balances.total, icon: Wallet, color: 'text-tertiary', bg: 'bg-tertiary-container/20' },
-    { title: 'Bank Account', amount: balances.bank, icon: Landmark, color: 'text-secondary', bg: 'bg-secondary-container/20' },
-    { title: 'E-Wallet', amount: balances.eWallet, icon: SmartphoneNfc, color: 'text-primary', bg: 'bg-primary-container/20' },
-    { title: 'Cash', amount: balances.cash, icon: Banknote, color: 'text-on-surface', bg: 'bg-surface-container-high' },
+    { title: 'Total Balance', amount: balances.total, icon: Wallet, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { title: 'Bank', amount: balances.bank, icon: Landmark, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { title: 'E-Wallet', amount: balances.eWallet, icon: SmartphoneNfc, color: 'text-sky-600', bg: 'bg-sky-50' },
+    { title: 'Cash', amount: balances.cash, icon: Banknote, color: 'text-slate-600', bg: 'bg-slate-50' },
   ];
 
   const timeFilteredCards = [
-    { title: 'Total Expenses', amount: timeFilteredExpenses, icon: ArrowDownToLine, color: 'text-error', bg: 'bg-error-container/20' },
-    { title: 'Total Income', amount: timeFilteredIncome, icon: ArrowUpFromLine, color: 'text-positive', bg: 'bg-surface-container-low' },
-    { title: 'Net Cash Flow', amount: timeFilteredIncome - timeFilteredExpenses, icon: TrendingUp, color: 'text-primary', bg: 'bg-primary-container/20' },
+    { title: 'Expenses', amount: timeFilteredExpenses, icon: ArrowDownToLine, color: 'text-rose-600', bg: 'bg-rose-50' },
+    { title: 'Income', amount: timeFilteredIncome, icon: ArrowUpFromLine, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { title: 'Net Flow', amount: timeFilteredIncome - timeFilteredExpenses, icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50' },
   ];
 
   return (
-    <div className="space-y-4 md:space-y-8">
+    <div className="space-y-2.5 sm:space-y-4">
       
       {/* Global Balances Section */}
       <section>
-        <h3 className="font-display text-sm md:text-base font-semibold text-on-surface-variant mb-3">Global Balances</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <h3 className="font-sans text-[11px] font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wider">Balances</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {globalCards.map((card, i) => (
             <div 
               key={card.title}
-              className="glass-card p-3 sm:p-4 md:p-5 flex flex-col justify-center gap-2 sm:gap-3 glass-card-hover min-w-0"
+              className={`glass-card p-2.5 sm:p-3.5 flex flex-col justify-center gap-1.5 glass-card-hover min-w-0 ${
+                i === 0 ? 'blue-card-glow' : ''
+              }`}
             >
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <div className={`p-1.5 rounded-full ${card.bg} ${card.color} shrink-0`}>
-                  <card.icon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+              <div className="flex items-center gap-1.5">
+                <div className={`p-1 rounded-md ${card.bg} ${card.color} shrink-0`}>
+                  <card.icon strokeWidth={2} className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-[11px] sm:text-xs md:text-sm font-medium text-on-surface-variant truncate">{card.title}</p>
+                <p className="text-[10px] sm:text-[11px] font-medium text-on-surface-variant truncate">{card.title}</p>
               </div>
               <div className="min-w-0">
-                <div className={`font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold break-words leading-tight`}>
+                <div className="font-display text-lg sm:text-2xl font-bold break-words leading-tight">
                   <AdaptiveNumber value={card.amount} formatCurrency={formatCurrency} currency={settings.currency} colorClass={getValueColorClass(card.amount)} />
                 </div>
               </div>
@@ -160,21 +204,21 @@ export function Dashboard() {
 
       {/* Time-Filtered Section */}
       <section>
-        <h3 className="font-display text-sm md:text-base font-semibold text-on-surface-variant mb-3">{globalTimeRange.label} Overview</h3>
-        <div className="grid grid-cols-3 gap-3 md:gap-6">
+        <h3 className="font-sans text-[11px] font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wider">{globalTimeRange.label}</h3>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {timeFilteredCards.map((card, i) => (
             <div 
               key={card.title}
-              className="glass-card p-2 sm:p-3 md:p-5 flex flex-col justify-center gap-1.5 sm:gap-2 md:gap-3 glass-card-hover min-w-0"
+              className="glass-card p-2 sm:p-3 flex flex-col justify-center gap-1 glass-card-hover min-w-0"
             >
-              <div className="flex items-center gap-1 md:gap-2">
-                <div className={`p-1 md:p-1.5 rounded-full ${card.bg} ${card.color} shrink-0`}>
-                  <card.icon strokeWidth={2} className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-5 md:h-5" />
+              <div className="flex items-center gap-1">
+                <div className={`p-1 rounded-md ${card.bg} ${card.color} shrink-0`}>
+                  <card.icon strokeWidth={2} className="w-3 h-3" />
                 </div>
-                <p className="text-[10px] sm:text-xs md:text-sm font-medium text-on-surface-variant truncate">{card.title}</p>
+                <p className="text-[10px] sm:text-xs font-medium text-on-surface-variant truncate">{card.title}</p>
               </div>
               <div className="min-w-0">
-                <div className={`font-display text-lg sm:text-xl md:text-3xl lg:text-4xl font-semibold break-words leading-tight`}>
+                <div className="font-display text-sm sm:text-lg font-bold break-words leading-tight">
                   <AdaptiveNumber value={card.amount} formatCurrency={formatCurrency} currency={settings.currency} colorClass={getValueColorClass(card.amount)} />
                 </div>
               </div>
@@ -183,64 +227,188 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-6">
-        <div className="glass-card p-4 md:p-6 lg:col-span-2 flex flex-col">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3 md:gap-4">
-            <h3 className="font-display text-lg md:text-2xl font-semibold text-on-surface">Cash Flow</h3>
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-2.5 sm:gap-4">
+        <div className="glass-card p-3 sm:p-4.5 lg:col-span-2 flex flex-col">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2.5 sm:mb-4 gap-2">
+            <h3 className="font-display text-sm sm:text-lg font-semibold text-on-surface">Cash Flow</h3>
           </div>
-          <div className="flex-1 min-h-[200px] md:min-h-[300px]">
+          <div className="flex-1 min-h-[160px] md:min-h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ffbf00" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#ffbf00" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#059669" stopOpacity={0.25}/>
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#e2725b" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#e2725b" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#dc2626" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#dc2626" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(86, 66, 62, 0.1)" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#56423e' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#56423e' }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(44, 123, 229, 0.08)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#4a6080' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#4a6080' }} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: 'var(--sys-glass-bg)', borderRadius: '12px', border: '1px solid var(--sys-glass-border)', boxShadow: '0 4px 20px var(--sys-glass-shadow)', color: 'var(--sys-on-surface)', backdropFilter: 'blur(16px)' }}
                 />
-                <Area type="monotone" dataKey="income" stroke="#ffbf00" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={2} />
-                <Area type="monotone" dataKey="expense" stroke="#e2725b" fillOpacity={1} fill="url(#colorExpense)" strokeWidth={2} />
+                <Area type="monotone" dataKey="income" stroke="#059669" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={2} />
+                <Area type="monotone" dataKey="expense" stroke="#dc2626" fillOpacity={1} fill="url(#colorExpense)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="glass-card p-4 md:p-6 flex flex-col">
-          <h3 className="font-display text-lg md:text-2xl font-semibold text-on-surface mb-4 md:mb-6">Expenses</h3>
-          <div className="flex-1 min-h-[180px] md:min-h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={expenseByCategory}
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  isAnimationActive={false}
-                >
-                  {expenseByCategory.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--sys-glass-bg)', borderRadius: '12px', border: '1px solid var(--sys-glass-border)', boxShadow: '0 4px 20px var(--sys-glass-shadow)', color: 'var(--sys-on-surface)', backdropFilter: 'blur(16px)' }}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+        <div className="glass-card p-3 sm:p-4.5 flex flex-col space-y-3">
+          <div className="flex items-center justify-between gap-2 border-b border-surface-variant/15 pb-2">
+            <h3 className="font-display text-sm sm:text-base font-bold text-on-surface">
+              Breakdown
+            </h3>
+            
+            {/* Segmented Control */}
+            <div className="flex bg-surface-container-low p-0.5 rounded-lg text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => setBreakdownType('expense')}
+                className={`px-2 py-0.5 rounded-md transition-colors ${
+                  breakdownType === 'expense'
+                    ? 'bg-surface-container-lowest text-on-surface shadow-xs font-semibold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Expenses
+              </button>
+              <button
+                type="button"
+                onClick={() => setBreakdownType('income')}
+                className={`px-2 py-0.5 rounded-md transition-colors ${
+                  breakdownType === 'income'
+                    ? 'bg-surface-container-lowest text-on-surface shadow-xs font-semibold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Income
+              </button>
+            </div>
           </div>
+
+          {activeBreakdownData.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center py-6 text-center text-on-surface-variant text-xs space-y-1">
+              <p>No {breakdownType} records in this period.</p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {/* Floating Callout Card for Selected Category (Outside Donut Center) */}
+              {selectedCategory && (
+                <div className="p-2 rounded-xl bg-surface-container-lowest/95 border border-primary/25 shadow-sm backdrop-blur-md flex items-center justify-between gap-2 text-xs animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: selectedCategory.color }} />
+                    <span className="font-semibold text-on-surface truncate">{selectedCategory.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 font-mono shrink-0">
+                    <span className="font-bold text-on-surface">{formatCurrency(selectedCategory.value, settings.currency)}</span>
+                    <span className="text-primary font-semibold text-[11px]">({selectedCategory.percentage.toFixed(1)}%)</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCategoryName(null)}
+                      className="text-on-surface-variant hover:text-on-surface p-1 rounded-md hover:bg-surface-container transition-colors"
+                      aria-label="Dismiss selection"
+                      title="Dismiss"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Donut Chart */}
+              <div className="h-36 sm:h-42 w-full flex items-center justify-center relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={activeBreakdownData}
+                      innerRadius={38}
+                      outerRadius={56}
+                      paddingAngle={3}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      isAnimationActive={false}
+                      onClick={(entry) => {
+                        setSelectedCategoryName(prev => prev === entry.name ? null : entry.name);
+                      }}
+                    >
+                      {activeBreakdownData.map((entry, index) => {
+                        const isSelected = selectedCategoryName === entry.name;
+                        return (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color} 
+                            stroke={isSelected ? 'var(--sys-surface)' : 'transparent'}
+                            strokeWidth={isSelected ? 3 : 0}
+                            className="cursor-pointer transition-opacity"
+                            opacity={selectedCategoryName === null || isSelected ? 1 : 0.55}
+                          />
+                        );
+                      })}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+
+                {/* Center total — completely unblocked and clearly visible */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                  <span className="text-[9px] uppercase font-mono text-on-surface-variant font-medium">Total</span>
+                  <span className="text-xs sm:text-sm font-bold font-mono text-on-surface">
+                    {formatCurrency(activeBreakdownTotal, settings.currency)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Mobile-friendly touch list with category name, amount, and percentage */}
+              <div className="space-y-1.5 max-h-40 sm:max-h-48 overflow-y-auto pr-1">
+                {activeBreakdownData.map((cat, idx) => {
+                  const isSelected = selectedCategoryName === cat.name;
+                  return (
+                    <div 
+                      key={idx} 
+                      onClick={() => setSelectedCategoryName(prev => prev === cat.name ? null : cat.name)}
+                      className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer text-xs space-y-1 ${
+                        isSelected
+                          ? 'bg-primary/10 border border-primary/20 shadow-xs'
+                          : 'bg-surface-container-low/60 hover:bg-surface-container/80'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span 
+                            className="w-2 h-2 rounded-full shrink-0" 
+                            style={{ backgroundColor: cat.color }} 
+                          />
+                          <span className="font-medium text-[11px] sm:text-xs text-on-surface truncate">{cat.name}</span>
+                        </div>
+                        <span className="font-mono font-semibold text-[11px] sm:text-xs text-on-surface shrink-0 ml-2">
+                          {formatCurrency(cat.value, settings.currency)}
+                        </span>
+                      </div>
+
+                      {/* Percentage bar */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1 bg-surface-container rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all" 
+                            style={{ width: `${cat.percentage}%`, backgroundColor: cat.color }} 
+                          />
+                        </div>
+                        <span className="text-[9px] font-mono text-on-surface-variant shrink-0 w-8 text-right">
+                          {cat.percentage.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

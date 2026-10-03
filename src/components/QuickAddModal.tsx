@@ -14,6 +14,7 @@ const schema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   date: z.string(),
   paymentMethod: z.enum(['eWallet', 'cash', 'bank']),
+  fixedExpense: z.boolean().optional(),
   merchant: z.string().optional(),
   notes: z.string().optional(),
   receiptImage: z.string().optional(),
@@ -29,7 +30,7 @@ interface Props {
 }
 
 export function QuickAddModal({ isOpen, onClose }: Props) {
-  const { categories, transactions, addTransaction, settings } = useStore();
+  const { categories, addTransaction, settings } = useStore();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
   const [attachmentType, setAttachmentType] = useState<string | null>(null);
@@ -40,10 +41,12 @@ export function QuickAddModal({ isOpen, onClose }: Props) {
       date: new Date().toISOString().split('T')[0],
       paymentMethod: 'eWallet',
       amount: 0,
+      fixedExpense: false,
     }
   });
 
   const txType = watch('type');
+  const isFixed = watch('fixedExpense');
   const filteredCategories = categories.filter(c => c.type === txType);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,13 +73,20 @@ export function QuickAddModal({ isOpen, onClose }: Props) {
       categoryId: data.categoryId,
       date: new Date(data.date).toISOString(),
       paymentMethod: data.paymentMethod,
+      fixedExpense: data.type === 'expense' ? Boolean(data.fixedExpense) : false,
       merchant: data.merchant,
       notes: data.notes,
       receiptImage: data.receiptImage,
       attachmentName: data.attachmentName,
       attachmentType: data.attachmentType,
     });
-    reset();
+    reset({
+      type: 'expense',
+      date: new Date().toISOString().split('T')[0],
+      paymentMethod: 'eWallet',
+      amount: 0,
+      fixedExpense: false,
+    });
     setPreviewImage(null);
     setAttachmentName(null);
     setAttachmentType(null);
@@ -101,21 +111,22 @@ export function QuickAddModal({ isOpen, onClose }: Props) {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="relative w-full max-w-md max-h-[90vh] flex flex-col glass-card shadow-2xl overflow-hidden rounded-t-3xl md:rounded-3xl"
           >
-            <div className="flex justify-between items-center p-4 md:p-6 pb-3 md:pb-4 shrink-0 border-b border-surface-variant/10">
-              <h3 className="font-display text-lg md:text-xl font-bold text-on-surface">Add Record</h3>
-              <button onClick={onClose} className="p-2 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                <X size={18} className="md:w-5 md:h-5" />
+            <div className="flex justify-between items-center p-3.5 sm:p-5 pb-2.5 sm:pb-3 shrink-0 border-b border-surface-variant/10">
+              <h3 className="font-display text-base sm:text-lg font-bold text-on-surface">Add Record</h3>
+              <button onClick={onClose} className="p-1.5 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                <X size={18} />
               </button>
             </div>
 
-            <div className="p-4 md:p-6 overflow-y-auto">
-              <form id="add-record-form" onSubmit={handleSubmit(onSubmit)} className="space-y-3 md:space-y-4">
+            <div className="p-3.5 sm:p-5 overflow-y-auto">
+              <form id="add-record-form" onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 sm:space-y-3.5">
                 <div className="flex bg-surface-container-low p-1 rounded-xl">
                   <button
                     type="button"
                     onClick={() => {
                       if (txType !== 'expense') {
                         setValue('type', 'expense');
+                        setValue('fixedExpense', false);
                         resetField('amount');
                         resetField('categoryId');
                       }
@@ -129,6 +140,7 @@ export function QuickAddModal({ isOpen, onClose }: Props) {
                     onClick={() => {
                       if (txType !== 'income') {
                         setValue('type', 'income');
+                        setValue('fixedExpense', false);
                         resetField('amount');
                         resetField('categoryId');
                       }
@@ -174,6 +186,28 @@ export function QuickAddModal({ isOpen, onClose }: Props) {
                   </select>
                   {errors.categoryId && <p className="text-error text-[10px] md:text-xs mt-1">{errors.categoryId.message}</p>}
                 </div>
+
+                {/* Fixed Expense Toggle for Expenses */}
+                {txType === 'expense' && (
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-surface-variant/20">
+                    <div>
+                      <span className="text-xs sm:text-sm font-medium text-on-surface block">
+                        Fixed Expense
+                      </span>
+                      <span className="text-[10px] text-on-surface-variant block">
+                        Exclude from Daily Budget
+                      </span>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        {...register('fixedExpense')}
+                        className="sr-only peer"
+                      />
+                      <div className="w-10 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
+                )}
 
                 <div>
                   <label className="block font-mono text-[10px] md:text-xs text-on-surface-variant mb-1">Payment Method</label>
@@ -254,11 +288,11 @@ export function QuickAddModal({ isOpen, onClose }: Props) {
               </form>
             </div>
 
-            <div className="p-4 md:p-6 pt-3 md:pt-4 shrink-0 bg-surface border-t border-surface-variant/10 pb-safe">
+            <div className="p-3.5 sm:p-5 pt-2.5 sm:pt-3 shrink-0 bg-surface border-t border-surface-variant/10 pb-safe">
               <button
                 form="add-record-form"
                 type="submit"
-                className="w-full bg-primary text-on-primary font-medium rounded-xl py-3 md:py-4 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20 border-t border-white/20"
+                className="w-full blue-card text-white font-medium rounded-xl py-2.5 sm:py-3.5 hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-primary/20 border-t border-white/20 text-sm sm:text-base"
               >
                 Save Record
               </button>

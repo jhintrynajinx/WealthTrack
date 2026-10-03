@@ -1,86 +1,59 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+/* Single light theme — dark mode removed */
 
 :root {
-  --sys-surface: #fbfbe2;
-  --sys-surface-dim: #dbdcc3;
-  --sys-surface-bright: #fbfbe2;
-  --sys-surface-container-lowest: #ffffff;
-  --sys-surface-container-low: #f5f5dc;
-  --sys-surface-container: #efefd7;
-  --sys-surface-container-high: #eaead1;
-  --sys-surface-container-highest: #e4e4cc;
-  --sys-on-surface: #1b1d0e;
-  --sys-on-surface-variant: #56423e;
-  --sys-inverse-surface: #303221;
-  --sys-inverse-on-surface: #f2f2d9;
-  --sys-outline: #89726d;
-  --sys-outline-variant: #ddc0ba;
-  --sys-surface-tint: #9f402d;
-  --sys-primary: #9f402d;
+  /* Soft cool white + Light Blue palette */
+  --sys-surface: #f1f6fd;
+  --sys-surface-dim: #d8e5f7;
+  --sys-surface-bright: #f8fbff;
+  --sys-surface-container-lowest: #f9fbfe;
+  --sys-surface-container-low: #edf4fc;
+  --sys-surface-container: #e3edf9;
+  --sys-surface-container-high: #d4e3f4;
+  --sys-surface-container-highest: #c6d9ef;
+
+  --sys-on-surface: #0f1f3a;
+  --sys-on-surface-variant: #4a6080;
+
+  --sys-inverse-surface: #1a2e4a;
+  --sys-inverse-on-surface: #e8f1fb;
+
+  --sys-outline: #7a9dc0;
+  --sys-outline-variant: #bdd4ea;
+
+  /* Blue accent */
+  --sys-surface-tint: #2c7be5;
+  --sys-primary: #2c7be5;
   --sys-on-primary: #ffffff;
-  --sys-primary-container: #e2725b;
-  --sys-on-primary-container: #5a0d02;
-  --sys-inverse-primary: #ffb4a5;
-  --sys-secondary: #795900;
+  --sys-primary-container: #dbeafe;
+  --sys-on-primary-container: #1e40af;
+  --sys-inverse-primary: #93c5fd;
+
+  /* Secondary — slightly deeper blue */
+  --sys-secondary: #1d64cc;
   --sys-on-secondary: #ffffff;
-  --sys-secondary-container: #ffbf00;
-  --sys-on-secondary-container: #6d5000;
-  --sys-tertiary: #7b5455;
+  --sys-secondary-container: #bfdbfe;
+  --sys-on-secondary-container: #1e3a8a;
+
+  /* Tertiary — teal/sky accent */
+  --sys-tertiary: #0e7490;
   --sys-on-tertiary: #ffffff;
-  --sys-tertiary-container: #b48888;
-  --sys-on-tertiary-container: #422324;
-  --sys-error: #ba1a1a;
+  --sys-tertiary-container: #cffafe;
+  --sys-on-tertiary-container: #164e63;
+
+  /* Error */
+  --sys-error: #dc2626;
   --sys-on-error: #ffffff;
-  --sys-error-container: #ffdad6;
-  --sys-on-error-container: #93000a;
-  
-  --sys-glass-bg: rgba(255, 255, 255, 0.7);
-  --sys-glass-border: rgba(255, 255, 255, 0.6);
-  --sys-glass-shadow: rgba(0, 0, 0, 0.04);
-  --sys-glass-shadow-hover: rgba(0, 0, 0, 0.08);
-}
+  --sys-error-container: #fee2e2;
+  --sys-on-error-container: #991b1b;
 
-.dark {
-  --sys-surface: #201a19;
-  --sys-surface-dim: #171211;
-  --sys-surface-bright: #3f3634;
-  --sys-surface-container-lowest: #140c0b;
-  --sys-surface-container-low: #201a19;
-  --sys-surface-container: #241e1d;
-  --sys-surface-container-high: #2f2827;
-  --sys-surface-container-highest: #3b3332;
-  --sys-on-surface: #ede0dd;
-  --sys-on-surface-variant: #d8c2be;
-  --sys-inverse-surface: #ede0dd;
-  --sys-inverse-on-surface: #201a19;
-  --sys-outline: #a08c89;
-  --sys-outline-variant: #534341;
-  --sys-surface-tint: #ffb4a6;
-  --sys-primary: #ffb4a6;
-  --sys-on-primary: #650b00;
-  --sys-primary-container: #832715;
-  --sys-on-primary-container: #ffdad4;
-  --sys-inverse-primary: #a13d28;
-  --sys-secondary: #fbbc04;
-  --sys-on-secondary: #402d00;
-  --sys-secondary-container: #5c4300;
-  --sys-on-secondary-container: #ffdf9c;
-  --sys-tertiary: #ecbaba;
-  --sys-on-tertiary: #472728;
-  --sys-tertiary-container: #613c3d;
-  --sys-on-tertiary-container: #ffdad9;
-  --sys-error: #ffb4ab;
-  --sys-on-error: #690005;
-  --sys-error-container: #93000a;
-  --sys-on-error-container: #ffdad6;
-
-  --sys-glass-bg: rgba(36, 30, 29, 0.65);
-  --sys-glass-border: rgba(255, 255, 255, 0.08);
-  --sys-glass-shadow: rgba(0, 0, 0, 0.25);
-  --sys-glass-shadow-hover: rgba(0, 0, 0, 0.4);
+  /* Glass */
+  --sys-glass-bg: rgba(248, 251, 255, 0.92);
+  --sys-glass-border: rgba(44, 123, 229, 0.11);
+  --sys-glass-shadow: rgba(30, 64, 175, 0.05);
+  --sys-glass-shadow-hover: rgba(30, 64, 175, 0.1);
 }
 
 @theme {
@@ -133,52 +106,74 @@
 @layer base {
   body {
     @apply bg-surface text-on-surface font-sans antialiased;
+    background: linear-gradient(155deg, #edf4fc 0%, #f7faff 45%, #e9f2fb 100%);
+    background-attachment: fixed;
   }
 }
 
 .glass-card {
   @apply backdrop-blur-xl rounded-xl transition-all duration-300 ease-in-out;
-  background-color: var(--sys-glass-bg);
+  background: rgba(248, 251, 255, 0.92);
   border: 1px solid var(--sys-glass-border);
-  box-shadow: 
-    0 4px 6px -1px var(--sys-glass-shadow),
-    0 10px 15px -3px var(--sys-glass-shadow),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 1px 2px 0 var(--sys-glass-shadow),
+    0 3px 8px -2px var(--sys-glass-shadow),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
 }
 
 .glass-card-hover {
   @apply hover:-translate-y-0.5 transition-all duration-300 ease-in-out hover:scale-[1.01];
 }
 .glass-card-hover:hover {
-  box-shadow: 
-    0 10px 15px -3px var(--sys-glass-shadow-hover),
-    0 20px 25px -5px var(--sys-glass-shadow-hover),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 3px 8px -2px var(--sys-glass-shadow-hover),
+    0 8px 18px -4px var(--sys-glass-shadow-hover),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
+}
+
+/* Smooth Blue gradient accent cards */
+.blue-card {
+  background: linear-gradient(135deg, #2c7be5 0%, #2563eb 50%, #1d4ed8 100%);
+  border: 1px solid rgba(44, 123, 229, 0.25);
+  box-shadow: 0 3px 12px -2px rgba(37, 99, 235, 0.22);
+}
+
+.blue-card-soft {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e2effe 50%, #dbeafe 100%);
+  border: 1px solid rgba(44, 123, 229, 0.15);
+  box-shadow: 0 2px 6px -2px rgba(44, 123, 229, 0.06);
+}
+
+.blue-card-glow {
+  background: linear-gradient(145deg, #f8fbff 0%, #f1f7ff 50%, #e2effe 100%);
+  border: 1px solid rgba(44, 123, 229, 0.16);
+  box-shadow: 0 2px 8px -2px rgba(44, 123, 229, 0.08);
 }
 
 @layer utilities {
-  .cat-food { @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 transition-colors duration-300 ease-in-out; }
-  .cat-groceries { @apply bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200 transition-colors duration-300 ease-in-out; }
-  .cat-transportation { @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 transition-colors duration-300 ease-in-out; }
-  .cat-shopping { @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 transition-colors duration-300 ease-in-out; }
-  .cat-entertainment { @apply bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 transition-colors duration-300 ease-in-out; }
-  .cat-bills { @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 transition-colors duration-300 ease-in-out; }
-  .cat-housing { @apply bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 transition-colors duration-300 ease-in-out; }
-  .cat-healthcare { @apply bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200 transition-colors duration-300 ease-in-out; }
-  .cat-education { @apply bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 transition-colors duration-300 ease-in-out; }
-  .cat-gifts { @apply bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-200 transition-colors duration-300 ease-in-out; }
-  .cat-travel { @apply bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 transition-colors duration-300 ease-in-out; }
-  .cat-utilities { @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 transition-colors duration-300 ease-in-out; }
-  .cat-salary { @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 transition-colors duration-300 ease-in-out; }
-  .cat-allowance { @apply bg-lime-100 text-lime-800 dark:bg-lime-900 dark:text-lime-200 transition-colors duration-300 ease-in-out; }
-  .cat-part-time { @apply bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200 transition-colors duration-300 ease-in-out; }
-  .cat-freelance { @apply bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200 transition-colors duration-300 ease-in-out; }
-  .cat-bonus { @apply bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 transition-colors duration-300 ease-in-out; }
-  .cat-investment { @apply bg-green-200 text-green-900 dark:bg-green-800 dark:text-green-200 transition-colors duration-300 ease-in-out; }
-  .cat-refund { @apply bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 transition-colors duration-300 ease-in-out; }
-  .cat-gift-received { @apply bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-800 dark:text-fuchsia-200 transition-colors duration-300 ease-in-out; }
-  .cat-others { @apply bg-stone-100 text-stone-800 dark:bg-stone-800 dark:text-stone-200 transition-colors duration-300 ease-in-out; }
+  .cat-food { @apply bg-green-100 text-green-800 transition-colors duration-300 ease-in-out; }
+  .cat-groceries { @apply bg-teal-100 text-teal-800 transition-colors duration-300 ease-in-out; }
+  .cat-transportation { @apply bg-blue-100 text-blue-800 transition-colors duration-300 ease-in-out; }
+  .cat-shopping { @apply bg-purple-100 text-purple-800 transition-colors duration-300 ease-in-out; }
+  .cat-entertainment { @apply bg-pink-100 text-pink-800 transition-colors duration-300 ease-in-out; }
+  .cat-bills { @apply bg-red-100 text-red-800 transition-colors duration-300 ease-in-out; }
+  .cat-housing { @apply bg-orange-100 text-orange-800 transition-colors duration-300 ease-in-out; }
+  .cat-healthcare { @apply bg-rose-100 text-rose-800 transition-colors duration-300 ease-in-out; }
+  .cat-education { @apply bg-indigo-100 text-indigo-800 transition-colors duration-300 ease-in-out; }
+  .cat-gifts { @apply bg-fuchsia-100 text-fuchsia-800 transition-colors duration-300 ease-in-out; }
+  .cat-travel { @apply bg-sky-100 text-sky-800 transition-colors duration-300 ease-in-out; }
+  .cat-utilities { @apply bg-yellow-100 text-yellow-800 transition-colors duration-300 ease-in-out; }
+  .cat-salary { @apply bg-emerald-100 text-emerald-800 transition-colors duration-300 ease-in-out; }
+  .cat-allowance { @apply bg-lime-100 text-lime-800 transition-colors duration-300 ease-in-out; }
+  .cat-part-time { @apply bg-cyan-100 text-cyan-800 transition-colors duration-300 ease-in-out; }
+  .cat-freelance { @apply bg-violet-100 text-violet-800 transition-colors duration-300 ease-in-out; }
+  .cat-bonus { @apply bg-amber-100 text-amber-800 transition-colors duration-300 ease-in-out; }
+  .cat-investment { @apply bg-green-200 text-green-900 transition-colors duration-300 ease-in-out; }
+  .cat-refund { @apply bg-slate-100 text-slate-800 transition-colors duration-300 ease-in-out; }
+  .cat-gift-received { @apply bg-fuchsia-100 text-fuchsia-800 transition-colors duration-300 ease-in-out; }
+  .cat-others { @apply bg-stone-100 text-stone-800 transition-colors duration-300 ease-in-out; }
 
-  .text-positive { @apply text-emerald-700 dark:text-emerald-400 transition-colors duration-300 ease-in-out; }
-  .text-negative { @apply text-rose-600 dark:text-rose-400 transition-colors duration-300 ease-in-out; }
+  .text-positive { @apply text-emerald-700 transition-colors duration-300 ease-in-out; }
+  .text-negative { @apply text-rose-600 transition-colors duration-300 ease-in-out; }
 }
+

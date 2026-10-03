@@ -62,10 +62,18 @@ export function Transactions() {
       header: 'Category',
       cell: info => {
         const cat = categories.find(c => c.id === info.getValue());
+        const isFixed = info.row.original.fixedExpense;
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cat?.color || 'bg-surface-variant text-on-surface-variant'} transition-colors duration-300`}>
-            {cat?.name || 'Uncategorized'}
-          </span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cat?.color || 'bg-surface-variant text-on-surface-variant'} transition-colors duration-300`}>
+              {cat?.name || 'Uncategorized'}
+            </span>
+            {isFixed && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-100 text-sky-700 border border-sky-200">
+                Fixed
+              </span>
+            )}
+          </div>
         );
       },
     }),
@@ -153,62 +161,62 @@ export function Transactions() {
   });
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
-        <h2 className="font-display text-xl md:text-2xl font-semibold text-on-surface">Transactions</h2>
+    <div className="space-y-2.5 sm:space-y-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-1.5">
+        <h2 className="font-display text-lg sm:text-2xl font-semibold text-on-surface">Transactions</h2>
       </div>
       
-      <div className="glass-card p-4 md:p-6">
-        <div className="flex flex-col gap-3 md:gap-4 mb-3 md:mb-6">
-          <div className="flex flex-col md:flex-row md:justify-between gap-3 md:gap-4">
+      <div className="glass-card p-2.5 sm:p-5">
+        <div className="flex flex-col gap-2 sm:gap-3 mb-2.5 sm:mb-4">
+          <div className="flex flex-col md:flex-row md:justify-between gap-2">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" size={16} />
               <input
                 type="text"
                 placeholder="Search by merchant or notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-surface-container-low border border-surface-variant/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full transition-colors"
+                className="pl-9 pr-3 py-1.5 bg-surface-container-low/70 border border-surface-variant/40 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 w-full transition-colors"
               />
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="bg-surface-container-low border border-surface-variant/50 rounded-xl p-1 inline-flex shadow-inner">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <div className="bg-surface-container-low/80 border border-surface-variant/40 rounded-xl p-0.5 inline-flex">
               <button
                 onClick={() => { setActiveFilterType('all'); setSelectedCategory(null); setIsExpenseExpanded(false); setIsIncomeExpanded(false); }}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out ${activeFilterType === 'all' && !isExpenseExpanded && !isIncomeExpanded ? 'bg-surface text-on-surface shadow-md border border-surface-variant/30 scale-[1.03]' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 hover:-translate-y-0.5 hover:shadow-sm'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ease-in-out ${activeFilterType === 'all' && !isExpenseExpanded && !isIncomeExpanded ? 'bg-surface-container-lowest text-primary shadow-xs border border-primary/20 font-semibold' : 'text-on-surface-variant hover:text-on-surface'}`}
               >
                 All
               </button>
               
-              <div className="flex items-center ml-1">
+              <div className="flex items-center ml-0.5">
                 <button
                   onClick={() => { setActiveFilterType('expense'); setSelectedCategory(null); setIsExpenseExpanded(false); setIsIncomeExpanded(false); }}
-                  className={`px-4 py-1.5 rounded-l-lg text-sm font-medium transition-all duration-200 ease-in-out ${(isExpenseExpanded || (!isIncomeExpanded && activeFilterType === 'expense')) ? 'bg-surface text-on-surface shadow-md border border-surface-variant/30 scale-[1.03] z-10' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 hover:-translate-y-0.5 hover:shadow-sm'}`}
+                  className={`px-3 py-1 rounded-l-lg text-xs font-medium transition-all duration-200 ease-in-out ${(isExpenseExpanded || (!isIncomeExpanded && activeFilterType === 'expense')) ? 'bg-surface-container-lowest text-primary shadow-xs border border-primary/20 font-semibold' : 'text-on-surface-variant hover:text-on-surface'}`}
                 >
                   Expense
                 </button>
                 <button
                   onClick={() => { setIsExpenseExpanded(!isExpenseExpanded); setIsIncomeExpanded(false); }}
-                  className={`px-2 py-1.5 rounded-r-lg border-l border-surface-variant/20 transition-all duration-200 ease-in-out ${(isExpenseExpanded || (!isIncomeExpanded && activeFilterType === 'expense')) ? 'bg-surface text-on-surface shadow-md border border-surface-variant/30 border-l-transparent scale-[1.03] z-10' : 'text-on-surface-variant hover:bg-surface-variant/30 hover:-translate-y-0.5'}`}
+                  className={`px-1.5 py-1 rounded-r-lg border-l border-surface-variant/20 transition-all duration-200 ease-in-out ${(isExpenseExpanded || (!isIncomeExpanded && activeFilterType === 'expense')) ? 'bg-surface-container-lowest text-primary shadow-xs border border-primary/20 border-l-transparent' : 'text-on-surface-variant hover:text-on-surface'}`}
                 >
-                  <ChevronDown size={16} className={`transition-transform duration-300 ${isExpenseExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={14} className={`transition-transform duration-300 ${isExpenseExpanded ? 'rotate-180' : ''}`} />
                 </button>
               </div>
 
-              <div className="flex items-center ml-1">
+              <div className="flex items-center ml-0.5">
                 <button
                   onClick={() => { setActiveFilterType('income'); setSelectedCategory(null); setIsIncomeExpanded(false); setIsExpenseExpanded(false); }}
-                  className={`px-4 py-1.5 rounded-l-lg text-sm font-medium transition-all duration-200 ease-in-out ${(isIncomeExpanded || (!isExpenseExpanded && activeFilterType === 'income')) ? 'bg-surface text-on-surface shadow-md border border-surface-variant/30 scale-[1.03] z-10' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 hover:-translate-y-0.5 hover:shadow-sm'}`}
+                  className={`px-3 py-1 rounded-l-lg text-xs font-medium transition-all duration-200 ease-in-out ${(isIncomeExpanded || (!isExpenseExpanded && activeFilterType === 'income')) ? 'bg-surface-container-lowest text-primary shadow-xs border border-primary/20 font-semibold' : 'text-on-surface-variant hover:text-on-surface'}`}
                 >
                   Income
                 </button>
                 <button
                   onClick={() => { setIsIncomeExpanded(!isIncomeExpanded); setIsExpenseExpanded(false); }}
-                  className={`px-2 py-1.5 rounded-r-lg border-l border-surface-variant/20 transition-all duration-200 ease-in-out ${(isIncomeExpanded || (!isExpenseExpanded && activeFilterType === 'income')) ? 'bg-surface text-on-surface shadow-md border border-surface-variant/30 border-l-transparent scale-[1.03] z-10' : 'text-on-surface-variant hover:bg-surface-variant/30 hover:-translate-y-0.5'}`}
+                  className={`px-1.5 py-1 rounded-r-lg border-l border-surface-variant/20 transition-all duration-200 ease-in-out ${(isIncomeExpanded || (!isExpenseExpanded && activeFilterType === 'income')) ? 'bg-surface-container-lowest text-primary shadow-xs border border-primary/20 border-l-transparent' : 'text-on-surface-variant hover:text-on-surface'}`}
                 >
-                  <ChevronDown size={16} className={`transition-transform duration-300 ${isIncomeExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={14} className={`transition-transform duration-300 ${isIncomeExpanded ? 'rotate-180' : ''}`} />
                 </button>
               </div>
             </div>
@@ -251,7 +259,7 @@ export function Transactions() {
         </div>
         
         {/* Mobile & Tablet Card Layout */}
-        <div className="grid lg:hidden gap-3 md:gap-4">
+        <div className="grid lg:hidden gap-2 sm:gap-2.5">
             {filteredTransactions.map((tx) => {
               const isIncome = tx.type === 'income';
               const amountVal = isIncome ? tx.amount : -tx.amount;
@@ -261,19 +269,26 @@ export function Transactions() {
               return (
                 <div
                   key={tx.id}
-                  className="bg-surface-container-lowest p-4 md:p-5 rounded-2xl border border-surface-variant/20 shadow-sm flex flex-col gap-3"
+                  className="bg-surface-container-lowest/90 p-2.5 sm:p-3.5 rounded-xl border border-surface-variant/20 shadow-xs flex flex-col gap-1.5"
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex flex-col min-w-0">
-                      <span className="font-semibold text-base md:text-lg text-on-surface line-clamp-2" title={tx.merchant || 'Unknown Merchant'}>
+                      <span className="font-semibold text-sm sm:text-base text-on-surface truncate" title={tx.merchant || 'Unknown Merchant'}>
                         {tx.merchant || 'Unknown Merchant'}
                       </span>
-                      <span className={`mt-1 self-start inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium ${cat?.color || 'bg-surface-variant text-on-surface-variant'}`}>
-                        {cat?.name || 'Uncategorized'}
-                      </span>
+                      <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <span className={`inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium ${cat?.color || 'bg-surface-variant text-on-surface-variant'}`}>
+                          {cat?.name || 'Uncategorized'}
+                        </span>
+                        {tx.fixedExpense && (
+                          <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-semibold bg-sky-100 text-sky-700 border border-sky-200">
+                            Fixed
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end shrink-0 max-w-[140px] md:max-w-[200px]">
-                      <div className={`font-mono text-base md:text-lg font-bold text-right leading-tight`}>
+                    <div className="flex flex-col items-end shrink-0 max-w-[130px] sm:max-w-[180px]">
+                      <div className="font-mono text-sm sm:text-base font-bold text-right leading-tight">
                         <AdaptiveNumber 
                           value={tx.amount} 
                           formatCurrency={formatCurrency} 
@@ -283,19 +298,20 @@ export function Transactions() {
                           className="justify-end"
                         />
                       </div>
-                      <span className="text-[10px] md:text-xs font-medium text-on-surface-variant mt-1 px-2 py-0.5 bg-surface-container rounded-md">
+                      <span className="text-[9.5px] font-medium text-on-surface-variant mt-0.5 px-1.5 py-0.2 bg-surface-container rounded">
                         {label}
                       </span>
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between text-xs md:text-sm text-on-surface-variant pt-2 border-t border-surface-variant/10">
+                  <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-1 border-t border-surface-variant/10">
                     <span className="font-mono">{formatDate(tx.date, settings.dateFormat)}</span>
                     <button 
                       onClick={() => deleteTransaction(tx.id)}
-                      className="p-1.5 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-colors"
+                      className="p-1 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-md transition-colors"
+                      title="Delete"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                   

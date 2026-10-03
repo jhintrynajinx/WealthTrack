@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { StorageService } from '../services/storage';
-import { AppData, Transaction, Category, Budget, FinancialGoal, Account, Settings } from '../types';
+import { AppData, Transaction, Category, Budget, FinancialGoal, Account, Settings, MonthlyReport } from '../types';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
+import { ensureHistoricalReports, generateMonthlyReportSnapshot } from '../lib/reportService';
+import { getMonthDailyBudget } from '../lib/budgetCalculations';
 
 const defaultCategories: Category[] = [
   // Expense
@@ -56,6 +58,9 @@ const defaultData: AppData = {
     theme: 'light',
     dateFormat: "do 'of' MMMM yyyy",
   },
+  dailyBudgets: {},
+  defaultDailyBudget: 30,
+  monthlyReports: {},
 };
 
 const emptyData: AppData = {
@@ -69,6 +74,9 @@ const emptyData: AppData = {
     theme: 'light',
     dateFormat: "do 'of' MMMM yyyy",
   },
+  dailyBudgets: {},
+  defaultDailyBudget: 30,
+  monthlyReports: {},
 };
 
 export type TimeRangeType = 'day' | 'week' | 'month' | 'year' | 'custom';
@@ -86,6 +94,8 @@ interface AppState extends AppData {
   updateTransaction: (id: string, tx: Partial<Transaction>) => void;
   deleteTransaction: (id: string) => void;
   updateSettings: (settings: Partial<Settings>) => void;
+  setDailyBudget: (monthKey: string, amount: number) => void;
+  generateMonthlyReport: (monthKey: string) => void;
   resetData: () => void;
   importData: (data: AppData) => void;
 }
@@ -100,11 +110,32 @@ const loadInitialState = (): AppData => {
     if (stored.settings?.dateFormat === 'MMM dd, yyyy' || stored.settings?.dateFormat === 'yyyy-MM-dd') {
       stored.settings.dateFormat = "do 'of' MMMM yyyy";
     }
+    stored.dailyBudgets = stored.dailyBudgets || {};
+    stored.defaultDailyBudget = typeof stored.defaultDailyBudget === 'number' ? stored.defaultDailyBudget : 30;
+    
+    // Ensure historical reports exist for completed months
+    const historicalReports = ensureHistoricalReports(
+      stored.transactions || [],
+      stored.categories,
+      stored.dailyBudgets,
+      stored.defaultDailyBudget,
+      stored.monthlyReports || {}
+    );
+    stored.monthlyReports = historicalReports;
+    StorageService.saveData(stored);
     return stored;
   }
   
   if (isFirstLaunch) {
     localStorage.setItem('hasLaunchedBefore', 'true');
+    const initialReports = ensureHistoricalReports(
+      defaultData.transactions,
+      defaultData.categories,
+      defaultData.dailyBudgets,
+      defaultData.defaultDailyBudget,
+      {}
+    );
+    defaultData.monthlyReports = initialReports;
     StorageService.saveData(defaultData);
     return defaultData;
   }
@@ -158,6 +189,38 @@ export const useStore = create<AppState>()((set, get) => ({
       ...state,
       settings: { ...state.settings, ...newSettings },
     };
+    StorageService.saveData(nextState);
+    return nextState;
+  }),
+
+  setDailyBudget: (monthKey, amount) => set((state) => {
+    const nextDailyBudgets = { ...(state.dailyBudgets || {}), [monthKey]: amount };
+    const nextState = {
+      ...state,
+      dailyBudgets: nextDailyBudgets,
+      defaultDailyBudget: amount,
+    };
+    StorageService.saveData(nextState);
+    return nextState;
+  }),
+
+  generateMonthlyReport: (monthKey) => set((state) => {
+    const [yearStr, monthStr] = monthKey.split('-');
+    const year = parseInt(yearStr, 10);
+    const month = parseInt(monthStr, 10) - 1;
+    if (isNaN(year) || isNaN(month)) return state;
+
+    const monthDate = new Date(year, month, 1);
+    const budget = getMonthDailyBudget(state.dailyBudgets, state.defaultDailyBudget, monthKey);
+    const report = generateMonthlyReportSnapshot(
+      monthDate,
+      state.transactions,
+      state.categories,
+      budget
+    );
+
+    const nextReports = { ...(state.monthlyReports || {}), [monthKey]: report };
+    const nextState = { ...state, monthlyReports: nextReports };
     StorageService.saveData(nextState);
     return nextState;
   }),

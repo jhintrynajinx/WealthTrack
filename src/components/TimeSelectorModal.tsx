@@ -242,7 +242,7 @@ export function TimeSelectorModal({ isOpen, onClose }: Props) {
                   <button 
                     onClick={handleCustomApply}
                     disabled={!customStart || !customEnd}
-                    className="w-full bg-primary text-on-primary font-medium rounded-xl py-4 hover:opacity-90 active:scale-[0.98] transition-all shadow-md disabled:opacity-50 disabled:active:scale-100"
+                    className="w-full blue-card text-white font-medium rounded-xl py-3.5 hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-primary/20 disabled:opacity-50 disabled:active:scale-100"
                   >
                     Apply Range
                   </button>
